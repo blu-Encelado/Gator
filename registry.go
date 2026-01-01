@@ -2,10 +2,16 @@ package main
 
 import (
 	"Gator/internal/config"
+	"Gator/internal/database"
+	"context"
 	"fmt"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
@@ -38,10 +44,42 @@ func handlerLogin(s *state, cmd command) error {
 	if len(cmd.arguments) == 0 {
 		return fmt.Errorf("command arguments empty")
 	}
-	err := s.cfg.SetUser(cmd.arguments[0])
+	_, err := s.db.GetUser(context.Background(), cmd.arguments[0])
+	if err != nil {
+		return fmt.Errorf("user don't exist: %w", err)
+	}
+
+	err = s.cfg.SetUser(cmd.arguments[0])
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}
 	fmt.Println("user set")
+	return nil
+}
+
+func handlerRegister(s *state, cmd command) error {
+	if len(cmd.arguments) == 0 {
+		return fmt.Errorf("command arguments empty")
+	}
+	context_var := context.Background()
+	uuid_var := uuid.New()
+	time_now := time.Now()
+	user_new := database.CreateUserParams{
+		ID:        int32(uuid_var.ID()),
+		CreatedAt: time_now,
+		UpdatedAt: time_now,
+		Name:      cmd.arguments[0]}
+
+	user, err := s.db.CreateUser(context_var, user_new)
+	if err != nil {
+		return fmt.Errorf("fail to generate User: %w", err)
+	}
+	err = s.cfg.SetUser(cmd.arguments[0])
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	fmt.Println("User created:")
+	fmt.Println(user)
+
 	return nil
 }
