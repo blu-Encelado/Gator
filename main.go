@@ -37,6 +37,7 @@ func main() {
 
 	cmds.register("login", handlerLogin)
 	cmds.register("register", handlerRegister)
+	cmds.register("reset", handlerReset)
 
 	cmd_inst := command{
 		name:      cmd_list[1],

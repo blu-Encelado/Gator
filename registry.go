@@ -5,6 +5,7 @@ import (
 	"Gator/internal/database"
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/google/uuid"
@@ -80,6 +81,19 @@ func handlerRegister(s *state, cmd command) error {
 	}
 	fmt.Println("User created:")
 	fmt.Println(user)
+
+	return nil
+}
+
+func handlerReset(s *state, cmd command) error {
+	fmt.Printf("Called: %s\n", cmd.name)
+
+	context_var := context.Background()
+	err := s.db.Reset(context_var)
+	if err != nil {
+		os.Exit(1)
+		return fmt.Errorf("fail to reset: %w", err)
+	}
 
 	return nil
 }
