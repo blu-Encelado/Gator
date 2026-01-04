@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 )
 
+const feedURL string = "https://www.wagslane.dev/index.xml"
+
 type state struct {
 	db  *database.Queries
 	cfg *config.Config
@@ -85,6 +87,24 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 }
 
+func handlerGetUsers(s *state, cmd command) error {
+
+	fmt.Printf("%s registered:\n", cmd.name)
+	context_var := context.Background()
+	list, err := s.db.GetUsers(context_var)
+	if err != nil {
+		return fmt.Errorf("fail to getUsers: %w", err)
+	}
+	for _, name := range list {
+		if name == s.cfg.CurrentUserName {
+			fmt.Printf("%s (current)\n", name)
+		} else {
+			fmt.Printf("%s\n", name)
+		}
+	}
+	return nil
+}
+
 func handlerReset(s *state, cmd command) error {
 	fmt.Printf("Called: %s\n", cmd.name)
 
@@ -94,6 +114,19 @@ func handlerReset(s *state, cmd command) error {
 		os.Exit(1)
 		return fmt.Errorf("fail to reset: %w", err)
 	}
+
+	return nil
+}
+
+func handlerFetch(s *state, cmd command) error {
+
+	context_var := context.Background()
+	feed, err := fetchFeed(context_var, feedURL)
+	if err != nil {
+		return fmt.Errorf("fail to fetch: %w", err)
+	}
+
+	fmt.Printf("%+v\n", feed)
 
 	return nil
 }

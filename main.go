@@ -38,6 +38,8 @@ func main() {
 	cmds.register("login", handlerLogin)
 	cmds.register("register", handlerRegister)
 	cmds.register("reset", handlerReset)
+	cmds.register("users", handlerGetUsers)
+	cmds.register("agg", handlerFetch)
 
 	cmd_inst := command{
 		name:      cmd_list[1],
