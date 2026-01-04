@@ -21,7 +21,7 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	client := http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
-		return &new_rrs, fmt.Errorf("Fail to sende the request: %w", err)
+		return &new_rrs, fmt.Errorf("Fail to send the request: %w", err)
 	}
 
 	defer response.Body.Close()
